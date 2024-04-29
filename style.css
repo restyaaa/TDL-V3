@@ -1,0 +1,300 @@
+body {
+    background-color: #ffffff;
+    color: #000000;
+    font-family: 'Poppins', sans-serif;
+}
+
+.judul {
+    z-index: 2;
+    color: white;
+}
+
+.btn-tambah {
+    background-color: #ffa11e;
+    color: white;
+    padding-left: 50px;
+    padding-right: 50px;
+    box-shadow: 0px 0px 10px rgba(255, 170, 33, 0.703);
+}
+
+.btn-tambah:focus {
+    background-color: #ffa11e !important;
+    color: white !important;
+    padding-left: 50px;
+    padding-right: 50px;
+    box-shadow: 0px 0px 10px rgba(255, 170, 33, 0.703);
+}
+
+.btn-tambah:hover {
+    background-color: #db8b1a;
+    color: white;
+    box-shadow: 0px 0px 10px rgba(210, 139, 26, 0.703);
+}
+
+.card-parent {
+    background-color: #ffffff;
+    position: relative;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+.card-parent:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    /* Adjust as needed */
+    background-color: #4793AF;
+    /* Your desired background color */
+    border-top-left-radius: 10px;
+    /* Ensure rounded corners match card */
+    border-top-right-radius: 10px;
+    /* Ensure rounded corners match card */
+    z-index: 0;
+    /* Ensure background is behind content */
+}
+
+.slide-enter-active,
+.slide-leave-active {
+    transition: transform 0.5s ease;
+}
+
+.slide-enter,
+.slide-leave-to {
+    transform: translateY(30px);
+    opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+}
+
+.modal-body {
+    z-index: 1;
+}
+
+.modal-title {
+    z-index: 1;
+    color: white;
+}
+
+.modal-header:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    /* Adjust as needed */
+    background-color: #4793AF;
+    /* Your desired background color */
+    border-top-left-radius: 5px;
+    /* Ensure rounded corners match card */
+    border-top-right-radius: 5px;
+    /* Ensure rounded corners match card */
+    z-index: 0;
+    /* Ensure background is behind content */
+}
+
+.no-task-image {
+    display: block;
+    margin: 0 auto;
+    /* Menengahkan gambar */
+    max-width: 200px;
+    opacity: 70%;
+    /* Sesuaikan ukuran maksimal sesuai kebutuhan */
+}
+
+.done {
+    opacity: 80%;
+}
+
+.card-tambah {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin-left: 5%;
+    margin-right: 5%;
+    /* Add shadow */
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+
+.list-move,
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.3s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.kegiatan {
+    color: #4793AF;
+}
+
+.btn-primary {
+    background-color: #4793AF;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #316477;
+}
+
+.btn-primary:focus {
+    background-color: #4793AF !important;
+}
+
+.btn-danger {
+    background-color: #DD5746;
+    border: none;
+}
+
+.btn-danger:focus {
+    background-color: #DD5746 !important;
+}
+
+.btn-danger:hover {
+    background-color: #8B322C;
+}
+
+.nama-aktivitas {
+    margin-right: 10px;
+}
+
+.list-group-item {
+    padding-left: 20px;
+    /* Adjust as needed */
+    padding-right: 20px;
+    /* Adjust as needed */
+}
+
+.modal-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    /* tinggi modal mengikuti tinggi layar */
+}
+
+.modal-content {
+    text-align: center;
+    /* konten modal di tengah */
+    width: 300px;
+    /* lebar modal */
+}
+
+input {
+    height: 50px;
+}
+
+.completed {
+    text-decoration: line-through;
+    /* Optionally reduce opacity for completed items */
+}
+
+.form-control {
+    background-color: #ffffff;
+}
+
+.progress {
+    height: 30px;
+    /* Adjust the height of the progress bar */
+    font-size: 16px;
+    /* Adjust the font size of the progress bar text */
+    transition: width 0.3s ease-in;
+    /* Add transition for width with ease-in animation */
+}
+
+.progress-bar {
+    background-color: #ffa11e;
+}
+
+.status-message {
+    color: #FFC470;
+}
+
+.dark-mode {
+    background-color: #737373;
+    color: #ffffff;
+}
+
+.dark-mode #app {
+    background-color: #737373;
+    color: #ffffff;
+}
+
+.dark-mode #parent {
+    background-color: #2e2e2e;
+    color: #ffffff;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode #card-tambah {
+    background-color: #2e2e2e;
+    color: #ffffff;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode input {
+    background-color: #2e2e2e;
+    color: #ffffff;
+}
+
+.dark-mode input::placeholder {
+    color: #ffffff;
+}
+
+.dark-mode input:focus {
+    background-color: #2e2e2e;
+    color: #ffffff;
+}
+
+.dark-mode h5 {
+    color: #ffffff;
+}
+
+.dark-mode h6 {
+    color: #ffffff;
+}
+
+.dark-mode li {
+    background-color: #2e2e2e;
+    color: rgb(255, 255, 255);
+}
+
+#toggle-theme {
+    display: none;
+}
+
+@media only screen and (max-width: 768px) {
+    .no-task-image {
+        display: block;
+        margin: 0 auto;
+        /* Menengahkan gambar */
+        max-width: 100px;
+        opacity: 70%;
+        /* Sesuaikan ukuran maksimal sesuai kebutuhan */
+    }
+    .list-group-item {
+        padding-left: 5px;
+        /* Adjust as needed */
+        padding-right: 5px;
+        /* Adjust as needed */
+    }
+}

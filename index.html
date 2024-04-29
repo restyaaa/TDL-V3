@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-do List App</title>
+    <meta name="theme_color" content="#EB3E48">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"
+    />
+    <script src="https://kit.fontawesome.com/7bc0a56e07.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="mode.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon.png" type="image/x-icon">
+</head>
+
+<body>
+    <div id="app" class="container mt-5">
+        <div class="card card-parent rounded-4 p-3 mb-5" id="parent">
+            <!-- SET MODE -->
+            <div style="color: #ffffff; z-index:3;">
+                <input type="checkbox" id="toggle-theme">
+                <label class="check-label" for="toggle-theme" style="cursor: pointer;">
+                    <p><span class="fa-solid fa-sun">Light</span></p>
+                </label>
+            </div>
+
+            <!-- JUDUL -->
+            <h2 class="text-center mb-4 fw-bolder judul">To Do List</h2>
+            <section>
+                <div class="card card-tambah mb-4" id="card-tambah">
+                    <form @submit.prevent="addActivity" class="p-3 d-flex justify-content-center align-items-center flex-column">
+                        <div class="input-group mb-0 mt-2">
+                            <input type="text" v-model="newActivity" class="form-control" placeholder="Mau Ngapain?">
+                        </div>
+                        <div class="input-group mb-0 mt-2">
+                            <input type="date" v-model="newActivityDate" class="form-control mb-2" placeholder="Tanggal Kegiatan">
+                        </div>
+                        <div class="input-group mb-2 mt-0">
+                            <input type="time" v-model="newActivityTime" class="form-control mb-2" placeholder="Waktu Kegiatan">
+                        </div>
+                        <button type="submit" class="btn btn-tambah fw-medium">Tambah</button>
+
+                    </form>
+                </div>
+
+                <!-- KEGIATANMU -->
+                <section>
+                    <h5 class="kegiatan fw-bold mt-1 mb-1">Kegiatanmu</h5>
+                    <ul class="list-group mb-3">
+                        <transition-group name="list" tag="ul" class="list-group mb-3 " duration="500" appear>
+                            <li v-for="activity in sortedActivities.filter(a => !a.complete)" :key="activity.id" class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <input type="checkbox" v-model="activity.complete" class="form-check-input me-2 cekbok">
+                                </div>
+                                <p class="nama-aktivitas text-start">{{ activity.name }}</p>
+                                <div class="">
+                                    {{ activity.date }} <br> {{ activity.time }}
+                                </div>
+                                <div class="text-end">
+                                    <div class="d-grid gap-1">
+                                        <button class="btn btn-primary btn-sm" @click="editActivity(activity)" data-bs-toggle="modal" data-bs-target="#editActivityModal">Ubah</button>
+                                        <button class="btn btn-danger btn-sm " @click="setActivityToDelete(activity)" data-bs-toggle="modal" data-bs-target="#deleteActivityModal">Hapus</button>
+                                    </div>
+                                </div>
+                            </li>
+                        </transition-group>
+                    </ul>
+                    <transition name="fade">
+                        <div v-if="activities.filter(a => !a.complete).length === 0">
+                            <img src="./no-task.png" alt="No Task" class="no-task-image">
+                            <p class="done text-center mt-2">Tidak Ada Kegiatan, Saatnya Istirahat!</p>
+                        </div>
+                    </transition>
+
+                </section>
+            </section>
+
+            <!-- Kegiatan Selesai -->
+            <section v-if="activities.filter(a => a.complete).length">
+                <h5 class="kegiatan fw-bold">Kegiatan Selesai</h5>
+                <ul class="list-group">
+                    <transition-group name="list" tag="ul" class="list-group mb-3">
+                        <li v-for="activity in activities.filter(a => a.complete)" :key="activity.id" :class="{ 'completed': activity.complete }" class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <input type="checkbox" v-model="activity.complete" class="form-check-input me-2 cekbok"> {{ activity.name }}
+                            </div>
+                            <div>{{ activity.date }} <br> {{ activity.time }}</div>
+                            <div>
+                                <button class="btn btn-danger btn-sm" @click="confirmDeleteCompletedActivity(activity)">Hapus</button>
+                            </div>
+                        </li>
+                    </transition-group>
+                </ul>
+            </section>
+
+
+            <section v-show="activities.length > 0">
+                <h6 class="kegiatan fw-bold mt-4">Persentase Progres</h6>
+                <div class="progress ">
+                    <div class="progress-bar" role="progressbar" :style="{ width: progressBarWidth }" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="transition: width 0.3s ease;">{{ progressBarText }}</div>
+                </div>
+                <p class="status-message mt-2 fw-bold">{{ statusMessage }}</p>
+            </section>
+
+
+            <button v-if="showAddTaskButton" @click="addNewTask" class="btn btn-warning mt-3 text-white">Buat Baru</button>
+        </div>
+
+        <!-- Modal untuk edit aktivitas -->
+        <div class="modal fade" id="editActivityModal" tabindex="-1" aria-labelledby="editActivityModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="editActivityModalLabel">Ubah Aktivitas</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="saveEditedActivity">
+                            <div class="mb-3">
+                                <label for="editActivityName" class="form-label text-start">Nama Aktivitas</label>
+                                <input type="text" v-model="editedActivity.name" class="form-control" id="editActivityName">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editActivityDate" class="form-label text-start">Tanggal</label>
+                                <input type="date" v-model="editedActivity.date" class="form-control" id="editActivityDate">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editActivityTime" class="form-label text-start">Waktu</label>
+                                <input type="time" v-model="editedActivity.time" class="form-control" id="editActivityTime">
+                            </div>
+                            <button type="button" class="btn btn-secondary m-2" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary m-2">Simpan Perubahan</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal untuk notifikasi edit aktivitas -->
+        <div class="modal fade" id="EditSuccessModal" tabindex="-1" aria-labelledby="deleteSuccessModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <p class="mb-0">Aktivitas berhasil diubah</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Activity Modal -->
+        <div class="modal fade" id="deleteActivityModal" tabindex="-1" aria-labelledby="deleteActivityModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title mb-0 fw-bold" id="deleteActivityModalLabel">Hapus Aktivitas</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Apakah kamu yakin mau hapus aktivitas ini?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <!-- Ensure that the @click event is correctly bound -->
+                        <button type="button" class="btn btn-danger" @click="deleteConfirmedActivity">Hapus</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal untuk notifikasi delete aktivitas -->
+        <div class="modal fade" id="deleteSuccessModal" tabindex="-1" aria-labelledby="deleteSuccessModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <p class="mb-0">Aktivitas berhasil dihapus</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal untuk aktivitas selesai yang akan dihapus -->
+        <div class="modal fade" id="deleteCompletedActivityModal" tabindex="-1" aria-labelledby="deleteCompletedActivityModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="deleteCompletedActivityModalLabel">Hapus Aktivitas Selesai</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Apakah kamu yakin mau menghapus aktivitas selesai ini ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="button" class="btn btn-danger" @click="deleteConfirmedCompletedActivity">Hapus</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal untuk notifikasi delete aktivitas selesai -->
+        <div class="modal fade" id="deleteCompletedSuccessModal" tabindex="-1" aria-labelledby="deleteSuccessModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <p class="mb-0">Aktivitas Selesai berhasil dihapus</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    activities: JSON.parse(localStorage.getItem('activities')) || [],
+                    newActivity: "",
+                    newActivityDate: "",
+                    newActivityTime: "",
+                    activityToDelete: null,
+                    editedActivity: {
+                        id: null,
+                        name: "",
+                        date: "",
+                        time: ""
+                    },
+                };
+            },
+            computed: {
+                progressBarWidth() {
+                    const totalTasks = this.activities.length;
+                    const completedTasks = this.activities.filter(a => a.complete).length;
+                    return `${(completedTasks / totalTasks) * 100}%`;
+                },
+                progressBarText() {
+                    const totalTasks = this.activities.length;
+                    const completedTasks = this.activities.filter(a => a.complete).length;
+                    if (totalTasks === 0) {
+                        return '0%';
+                    } else {
+                        return `${Math.round((completedTasks / totalTasks) * 100)}%`;
+                    }
+                },
+                statusMessage() {
+                    console.log("Progress Bar Text:", this.progressBarText);
+                    const progress = parseFloat(this.progressBarText);
+                    console.log("Parsed Progress:", progress);
+
+                    if (progress === 0) {
+                        return 'Yah kok kosong :(';
+                    } else if (progress < 34) {
+                        return 'Tugas kamu masih banyak! AYO SEMANGAT 🏃';
+                    } else if (progress >= 34 && progress < 67) {
+                        return 'Lumayan ngurang sihh, AYO LANJUT! TETAP SEMANGAT! 🤩';
+                    } else if (progress >= 67 && progress < 90) {
+                        return 'WAHHH DIKIT LAGI! selesain ga sih nanggung nihhh🤩🤟';
+                    } else if (progress === 100) {
+                        return 'WOAHH! U DID A GREAT JOB!💪🏅';
+                    }
+                },
+                showAddTaskButton() {
+                    // Adjusted this line to use the computed property instead of a data property
+                    return parseFloat(this.progressBarText) === 100;
+                },
+                sortedActivities() {
+                    return this.activities.sort((a, b) => {
+                        // Handling case when date or time is empty
+                        if (!a.date || !a.time) return -1; // Move activity without date or time to the top
+                        if (!b.date || !b.time) return 1; // Move activity without date or time to the top
+
+                        // Convert date strings to Date objects for comparison
+                        const dateA = new Date(a.date + ' ' + a.time);
+                        const dateB = new Date(b.date + ' ' + b.time);
+
+                        // Compare dates and times
+                        return dateA - dateB;
+                    });
+                },
+
+
+            },
+            watch: {
+                activities: {
+                    handler(newActivities) {
+                        localStorage.setItem('activities', JSON.stringify(newActivities));
+                    },
+                    deep: true,
+                },
+            },
+            methods: {
+                addActivity() {
+                    if (this.newActivity.trim() !== "") {
+                        this.activities.push({
+                            name: this.newActivity,
+                            date: this.newActivityDate,
+                            time: this.newActivityTime,
+                            complete: false,
+                            id: this.activities.length + 1,
+                        });
+                        this.newActivity = "";
+                        this.newActivityDate = "";
+                        this.newActivityTime = "";
+
+                    }
+                },
+                editActivity(activity) {
+                    // Salin aktivitas ke objek editedActivity
+                    this.editedActivity = {...activity
+                    };
+                    // Tampilkan modal
+                    $('#editActivityModal').modal('show');
+                },
+                saveEditedActivity() {
+                    // Temukan indeks aktivitas yang akan diubah
+                    const index = this.activities.findIndex(a => a.id === this.editedActivity.id);
+                    if (index !== -1) {
+                        // Salin aktivitas yang diedit ke dalam objek baru
+                        const updatedActivity = {...this.editedActivity
+                        };
+                        // Update aktivitas pada indeks yang ditemukan
+                        this.activities.splice(index, 1, updatedActivity);
+                        // Sembunyikan modal setelah menyimpan perubahan
+                        $('#editActivityModal').modal('hide');
+                        $('#EditSuccessModal').modal('show');
+
+
+                    }
+                },
+                setActivityToDelete(activity) {
+                    this.activityToDelete = activity;
+                },
+
+                deleteConfirmedActivity() {
+                    const index = this.activities.findIndex(a => a.id === this.activityToDelete.id);
+                    if (index !== -1) {
+                        this.activities.splice(index, 1);
+                        this.activityToDelete = null; // Atur activityToDelete ke null setelah penghapusan
+
+                        $('#deleteSuccessModal').modal('show');
+                        $('#deleteActivityModal').modal('hide'); // Sembunyikan modal setelah penghapusan
+
+                        // Sembunyikan modal setelah 0,5 detik
+
+                    }
+                },
+                // Metode untuk menampilkan modal konfirmasi penghapusan aktivitas yang sudah selesai
+                confirmDeleteCompletedActivity(activity) {
+                    this.activityToDelete = activity;
+                    $('#deleteCompletedActivityModal').modal('show'); // Tampilkan modal konfirmasi penghapusan
+                },
+                // Metode untuk menghapus aktivitas yang sudah selesai dikerjakan
+                deleteConfirmedCompletedActivity() {
+                    const index = this.activities.findIndex(a => a.id === this.activityToDelete.id);
+                    if (index !== -1) {
+                        this.activities.splice(index, 1);
+                        this.activityToDelete = null; // Atur activityToDelete ke null setelah penghapusan
+                        $('#deleteCompletedActivityModal').modal('hide'); // Sembunyikan modal setelah penghapusan
+                        $('#deleteCompletedSuccessModal').modal('show');
+                        // Sembunyikan modal setelah 0,5 detik
+
+                    }
+                },
+                addNewTask() {
+                    this.activities = [];
+                    // Panggil fungsi resetProgress setelah mengosongkan activities
+                },
+            },
+        }).mount("#app");
+        window.addEventListener("load", () => {
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("sw.js")
+            }
+        });
+    </script>
+
+</body>
+
+</html>
