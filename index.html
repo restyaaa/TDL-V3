@@ -117,7 +117,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title fw-bold" id="editActivityModalLabel">Ubah Aktivitas</h5>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" id="modal-body">
                         <form @submit.prevent="saveEditedActivity">
                             <div class="mb-3">
                                 <label for="editActivityName" class="form-label text-start">Nama Aktivitas</label>
@@ -141,7 +141,7 @@
         <!-- Modal untuk notifikasi edit aktivitas -->
         <div class="modal fade" id="EditSuccessModal" tabindex="-1" aria-labelledby="deleteSuccessModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+                <div class="modal-content" id="modal-body">
                     <div class="modal-body text-center">
                         <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
                         <p class="mb-0">Aktivitas berhasil diubah</p>
@@ -153,12 +153,12 @@
         <!-- Delete Activity Modal -->
         <div class="modal fade" id="deleteActivityModal" tabindex="-1" aria-labelledby="deleteActivityModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content">
+                <div class="modal-content" id="modal-body">
                     <div class="modal-header">
                         <h5 class="modal-title mb-0 fw-bold" id="deleteActivityModalLabel">Hapus Aktivitas</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" id="body-modal">
                         <p>Apakah kamu yakin mau hapus aktivitas ini?</p>
                     </div>
                     <div class="modal-footer">
@@ -173,7 +173,7 @@
         <!-- Modal untuk notifikasi delete aktivitas -->
         <div class="modal fade" id="deleteSuccessModal" tabindex="-1" aria-labelledby="deleteSuccessModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+                <div class="modal-content" id="modal-body">
                     <div class="modal-body text-center">
                         <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
                         <p class="mb-0">Aktivitas berhasil dihapus</p>
@@ -185,10 +185,10 @@
         <!-- Modal untuk aktivitas selesai yang akan dihapus -->
         <div class="modal fade" id="deleteCompletedActivityModal" tabindex="-1" aria-labelledby="deleteCompletedActivityModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content">
+                <div class="modal-content" id="modal-body">
                     <div class="modal-header">
                         <h5 class="modal-title fw-bold" id="deleteCompletedActivityModalLabel">Hapus Aktivitas Selesai</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                     </div>
                     <div class="modal-body">
                         <p>Apakah kamu yakin mau menghapus aktivitas selesai ini ?</p>
@@ -203,7 +203,7 @@
         <!-- Modal untuk notifikasi delete aktivitas selesai -->
         <div class="modal fade" id="deleteCompletedSuccessModal" tabindex="-1" aria-labelledby="deleteSuccessModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+                <div class="modal-content" id="modal-body">
                     <div class="modal-body text-center">
                         <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
                         <p class="mb-0">Aktivitas Selesai berhasil dihapus</p>
